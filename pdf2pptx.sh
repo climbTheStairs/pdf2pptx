@@ -1,12 +1,6 @@
 #!/bin/bash
 # Alireza Shafaei - shafaei@cs.ubc.ca - Jan 2016
 
-resolution=1024
-density=300
-#colorspace="-depth 8"
-colorspace="-colorspace sRGB -background white -alpha remove"
-makeWide=true
-
 if [ $# -eq 0 ]; then
     echo "No arguments supplied!"
     echo "Usage: ./pdf2pptx.sh file.pdf"
@@ -16,6 +10,7 @@ if [ $# -eq 0 ]; then
     exit 1
 fi
 
+makeWide=true
 if [ $# -eq 2 ]; then
 	if [ "$2" == "notwide" ]; then
 		makeWide=false
@@ -30,7 +25,8 @@ if [ -d "$tempname" ]; then
 fi
 
 mkdir "$tempname"
-convert -density $density $colorspace -resize "x${resolution}" "$1" "$tempname"/slide.png
+colorspace="-colorspace sRGB -background white -alpha remove"
+convert -density 300 $colorspace -resize "x1024" "$1" "$tempname"/slide.png
 
 if [ $? -eq 0 ]; then
 	echo "Extraction succ!"
@@ -53,7 +49,6 @@ fi
 mydir=$(dirname "$mypath")
 
 pptname="$1.pptx.base"
-fout=$(basename "$1" .pdf)".pptx"
 rm -rf "$pptname"
 cp -r "$mydir"/template "$pptname"
 
@@ -112,9 +107,10 @@ fi
 popd
 
 pushd "$pptname"
-rm -rf ../"$fout"
-zip -q -r ../"$fout" .
+rm -rf ../"$1.pptx"
+zip -q -r ../"$1.pptx" .
 popd
 
 rm -rf "$pptname"
 rm -rf "$tempname"
+
